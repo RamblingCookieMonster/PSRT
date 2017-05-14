@@ -24,7 +24,7 @@ GUID = '0552cf08-a9a5-485d-8e25-815dd0e45c91'
 Author = 'Warren Frame'
 
 # Company or vendor of this module
-CompanyName = 'Unknown'
+CompanyName = ''
 
 # Copyright statement for this module
 Copyright = '(c) 2017 Warren Frame. All rights reserved.'

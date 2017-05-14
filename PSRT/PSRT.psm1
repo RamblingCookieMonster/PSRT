@@ -5,7 +5,7 @@ param (
 # Get public and private function definition files
     $Public  = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
     $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
-    $FilesToLoad = @([string[]]$Public + [string[]]$Private) | Where {$_}
+    $FilesToLoad = @([object[]]$Public + [object[]]$Private) | Where-Object {$_}
     $ModuleRoot = $PSScriptRoot
 
 # Dot source the files
@@ -13,6 +13,7 @@ param (
 # https://becomelotr.wordpress.com/2017/02/13/expensive-dot-sourcing/
     Foreach($File in $FilesToLoad)
     {
+        Write-Verbose "Importing [$File]"
         Try
         {
             if ($DebugModule)
@@ -34,3 +35,18 @@ param (
         }
     }
 
+#Initialize the config variable.  I know, I know...
+    Try
+    {
+        #Import the config
+        $PSRTConfig = $null
+        $PSRTConfig = Get-RTConfig -Source Config -ErrorAction Stop
+
+    }
+    Catch
+    {
+        Write-Warning "Error importing PSRT config"
+        Write-Warning $_
+    }
+
+Export-ModuleMember -Function $Public.BaseName

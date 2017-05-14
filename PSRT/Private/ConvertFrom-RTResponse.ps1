@@ -1,13 +1,14 @@
-﻿function Parse-RTResponse {
+﻿function ConvertFrom-RTResponse {
     [cmdletbinding()]
     param(
     [string]$Content
     )
     $ContentArray = $Content -split "`n"
     $Count = $ContentArray.Count    
-    $Output = @{}
+    $Output = [ordered]@{}
     $Name = $null
     $Value = $null
+
     for ($linenumber = 0; $linenumber -lt $Count; $linenumber++)
     {
         $thisline = $ContentArray[$linenumber]
@@ -33,16 +34,16 @@
             continue
         }
 
-        if($thisline -match '^[a-zA-Z0-9]+:')
+        if($thisline -match '^[a-zA-Z0-9 .{}()]+:')
         {
             $SplitData = $thisline.split(':')
             $SplitCount = $SplitData.count
             $Name = $SplitData[0]
-            $Value = ($SplitData[1..($SplitCount-1)] -join ':').Trim()
+            # account for other colons on first line
+            $Value = ($SplitData[1..($SplitCount-1)] -join ':').Trim() 
         }
-        elseif($line)
+        elseif($thisline)
         {
-            
             $Value = $thisline
         }
         else
@@ -50,7 +51,7 @@
             continue
         }
 
-        if($Name -and $Output.ContainsKey($Name))
+        if($Name -and $Output.keys -Contains $Name)
         {
             Write-Verbose "Appending to $Name"
             $Output[$Name] = $Output[$Name] + "`n$Value"
@@ -58,6 +59,13 @@
         elseif($Name)
         {
             $Output.add($Name, $Value)
+        }
+    }
+    foreach($key in $($Output.Keys))
+    {
+        if($Output[$key] -is [string])
+        {
+            $Output[$key] = $Output[$key].trim()
         }
     }
     [pscustomobject]$Output
