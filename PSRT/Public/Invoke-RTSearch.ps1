@@ -13,7 +13,7 @@ Function Invoke-RTSearch {
 .PARAMETER Raw
     If specified, do not parse output
 .EXAMPLE
-    Invoke-RTSearch -Query "ticket?query=Created%20>%20%273%20days%20ago%27&format=l""
+    Invoke-RTSearch -Query "Created > '3 days ago'"
 .FUNCTIONALITY
     Request Tracker
 #>
@@ -31,8 +31,10 @@ Function Invoke-RTSearch {
         [string]$BaseUri = $PSRTConfig.BaseUri,
         [switch]$Raw
     )
-    $uri = Join-Parts -Separator '/' -Parts $BaseUri, "/REST/1.0/search/$Query"
-    $Response = ( Invoke-WebRequest -Uri $uri -WebSession $Session ).Content
+    $headers = @{}
+    $headers.Add('Referer', "$BaseUri")
+    $uri = Join-Parts -Separator '/' -Parts $BaseUri, "/REST/1.0/search/ticket?query=$Query"
+    $Response = ( Invoke-WebRequest -Uri $uri -WebSession $Session -Headers $headers).Content
     if ($Raw) {
         $Response
     }
