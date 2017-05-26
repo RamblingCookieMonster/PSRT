@@ -12,6 +12,8 @@ Function Invoke-RTSearch {
     Base URI for RT.  Defaults to PSRTConfig.BaseUri
 .PARAMETER Raw
     If specified, do not parse output
+.OUTPUTS
+    A PSCustomObject sorted hash of all tickets returned by query and the respective info for each ticket
 .EXAMPLE
     Invoke-RTSearch -Query "Created > '3 days ago'"
 .FUNCTIONALITY
@@ -39,6 +41,13 @@ Function Invoke-RTSearch {
         $Response
     }
     else {
-        ConvertFrom-RTResponse -Content $Response
+        $Prelim = ConvertFrom-RTResponse -Content $Response
+        # Run a Get-RTTicket on every ticket returned from the Query, then store in sorted hash
+        $Output = [ordered]@{}
+        $Prelim.PSObject.Properties | ForEach-Object {
+            Write-Verbose "Fetching info on Ticket # $_.Name"
+            $Output.Add($_.Name, (Get-RTTicket -Ticket $_.Name -Session $Session))
+        }
+        [pscustomobject]$Output
     }
 }
