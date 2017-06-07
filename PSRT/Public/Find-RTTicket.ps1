@@ -11,13 +11,14 @@ Function Find-RTTicket {
     .PARAMETER Expand
         If specified, pull ticket information for each ticket returned by this query
     .PARAMETER Referer
-        Referer to use for whitelisting purposes.  See @ReferrerWhitelist RT configuration
+        Referer to use for whitelisting purposes.  Defaults to PSRTConfig.Referer (Created by New-RTSession)
         
-        Defaults to 'https://<hostname>', which translates to <hostname>:443 on RT's side
+        See @ReferrerWhitelist RT configuration if you run into CSRF errors
+        If you specify  'https://<hostname>', RT (and its whitelist) use <hostname>:443
     .PARAMETER Session
         RT session to use.  Defaults to PSRTConfig.Session (Created by New-RTSession)
     .PARAMETER BaseUri
-        Base URI for RT.  Defaults to PSRTConfig.BaseUri
+        Base URI for RT.  Defaults to PSRTConfig.BaseUri (Created by New-RTSession)
     .PARAMETER Raw
         If specified, do not parse output
     .EXAMPLE
@@ -34,7 +35,7 @@ Function Find-RTTicket {
         [parameter(Position = 1)]
         [string]$Query,
 
-        [string]$Referer = "https://$ENV:COMPUTERNAME",
+        [string]$Referer = $PSRTConfig.Referer,
 
         [switch]$Expand,
 

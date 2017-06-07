@@ -34,6 +34,7 @@
         [string]$BaseUri,
         [PSCredential]$Credential,
         [Microsoft.PowerShell.Commands.WebRequestSession]$Session,
+        [string]$Referer,
         [string]$Path = "$ModuleRoot\$env:USERNAME-$env:COMPUTERNAME-PSRT.xml"
     )
 

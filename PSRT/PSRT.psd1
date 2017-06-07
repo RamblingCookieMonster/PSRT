@@ -4,7 +4,7 @@
 RootModule = 'PSRT.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.1'
+ModuleVersion = '0.0.3'
 
 # ID used to uniquely identify this module
 GUID = '0552cf08-a9a5-485d-8e25-815dd0e45c91'
