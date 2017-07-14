@@ -41,6 +41,7 @@
             [pscustomobject]@{
                 BaseUri = $null
                 Credential = $null
+                Referer = $null
             } | Export-Clixml -Path $Path -Force -ErrorAction Stop
         }
         catch

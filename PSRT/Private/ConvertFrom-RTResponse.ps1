@@ -33,6 +33,11 @@
             $Output.add('HistoryOverview', $thisline)
             continue
         }
+        if($thisline -match '^# Ticket \d+ created')
+        {
+            $ticket = $thisline -replace "\D+"
+            $Output.add('id', $ticket)
+        }
 
         if($thisline -match '^[a-zA-Z0-9 .{}()]+:')
         {
