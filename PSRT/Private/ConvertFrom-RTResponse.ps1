@@ -8,6 +8,8 @@
     $Output = [ordered]@{}
     $Name = $null
     $Value = $null
+    $DateProps = echo Created Starts Started Due Resolved Told LastUpdated
+
 
     for ($linenumber = 0; $linenumber -lt $Count; $linenumber++)
     {
@@ -71,6 +73,10 @@
         if($Output[$key] -is [string])
         {
             $Output[$key] = $Output[$key].trim()
+            if($DateProps -contains $Key -and $Output[$key] -match '\d\d:\d\d:\d\d \d\d\d\d$')
+            {
+                $Output[$key] = ConvertFrom-RTDate -DateString $Output[$key]
+            }
         }
     }
     [pscustomobject]$Output

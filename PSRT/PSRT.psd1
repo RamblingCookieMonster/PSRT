@@ -4,7 +4,7 @@
 RootModule = 'PSRT.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.3'
+ModuleVersion = '0.0.5'
 
 # ID used to uniquely identify this module
 GUID = '0552cf08-a9a5-485d-8e25-815dd0e45c91'
@@ -64,7 +64,8 @@ FunctionsToExport = @( 'Get-RTConfig',
                        'New-RTSession',
                        'Set-RTConfig',
                        'Find-RTTicket',
-                       'New-RTTicket'
+                       'New-RTTicket',
+                       'Set-RTTicket'
                     )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
