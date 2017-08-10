@@ -35,10 +35,17 @@
             $Output.add('HistoryOverview', $thisline)
             continue
         }
-        if($thisline -match '^# Ticket \d+ created')
+        if($thisline -match '^# Ticket \d+ created|^# Ticket \d+ updated')
         {
             $ticket = $thisline -replace "\D+"
             $Output.add('id', $ticket)
+            continue
+        }
+        if($thisline -match '^id: ticket/\d+\s*$')
+        {
+            $ticket = $thisline -replace "\D+"
+            $Output.add('id', $ticket)
+            continue
         }
 
         if($thisline -match '^[a-zA-Z0-9 .{}()]+:')

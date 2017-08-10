@@ -37,6 +37,8 @@
         Base URI for RT.  Defaults to PSRTConfig.BaseUri (Created by New-RTSession)
     .PARAMETER Raw
         If specified, do not parse output
+    .PARAMETER Force
+        If specified, skip prompts
     .EXAMPLE
         Set-RTTicket -Ticket 123456 -Subject 'New Title!'
     .EXAMPLE
@@ -48,10 +50,11 @@
     .FUNCTIONALITY
         Request Tracker
     #>
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess=$true)]
     Param(
         [Alias('ID')]
         [ValidatePattern('^\d+$')]
+        [Parameter(ValueFromPipelineByPropertyName = $True)]
         [string]$Ticket,
         [string]$Requestor,
         [string]$Owner,
@@ -71,62 +74,72 @@
         $Session = $PSRTConfig.Session,
         [ValidateNotNull()] 
         [string]$BaseUri = $PSRTConfig.BaseUri,
-        [switch]$Raw
+        [switch]$Raw,
+        [switch]$Force
     )
-    $InvokeParams = @{ WebSession = $Session }
-    if($Referer)
+    Process
     {
-        $headers = @{}
-        $headers.Add('Referer', $Referer)
-        $InvokeParams.Add('Headers', $headers)
-    }
-    $uri = Join-Parts -Separator '/' -Parts $BaseUri, "/REST/1.0/ticket/$Ticket/edit"
+        $InvokeParams = @{ WebSession = $Session }
+        if($Referer)
+        {
+            $headers = @{}
+            $headers.Add('Referer', $Referer)
+            $InvokeParams.Add('Headers', $headers)
+        }
+        $uri = Join-Parts -Separator '/' -Parts $BaseUri, "/REST/1.0/ticket/$Ticket/edit"
     
-    # Merge explicit parameters into InputHash, with explicit param values taking precedent
-    $Parameters = . Get-ParameterValues
-    if(-not $PSBoundParameters.ContainsKey('InputHash'))
-    {
-        $InputHash = @{}
-    }
-    Write-Output Requestor,
-                 Owner,
-                 Priority,
-                 Subject,
-                 Queue,
-                 Cc,
-                 AdminCc,
-                 Status |
-        Foreach-Object {
-            $Property = $_
-            if($Parameters.containskey($Property))
+        # Merge explicit parameters into InputHash, with explicit param values taking precedent
+        $Parameters = . Get-ParameterValues
+        if(-not $PSBoundParameters.ContainsKey('InputHash'))
+        {
+            $InputHash = @{}
+        }
+        Write-Output Requestor,
+                     Owner,
+                     Priority,
+                     Subject,
+                     Queue,
+                     Cc,
+                     AdminCc,
+                     Status |
+            Foreach-Object {
+                $Property = $_
+                if($Parameters.containskey($Property))
+                {
+                    $InputHash.Set_Item($Property, $Parameters[$Property])
+                }
+            }
+    
+        # Build up content for ticket
+        # Queue must come last.  wtf RT. https://stackoverflow.com/a/29540271
+        $Content = ''
+        foreach($Key in $InputHash.Keys)
+        {
+            if($Key -ne 'Queue')
             {
-                $InputHash.Set_Item($Property, $Parameters[$Property])
+                $Content += "$Key`: $($InputHash[$Key])`n"
+            }
+            #Later: Handle odd custom fields
+        }
+        if($InputHash.ContainsKey('Queue'))
+        {
+            $Content += "Queue: $($InputHash['Queue'])`n"
+        }
+
+        $InvokeParams.Add('Body', @{content=$Content})
+        Write-Verbose "$($InvokeParams | Out-String)`n$($Content | Out-String)"
+
+        if( ($Force -and -not $WhatIf) -or
+            $PSCmdlet.ShouldProcess( "Set ticket $Ticket with content $($Content | Out-String)".trim(),
+                                     "Set ticket $Ticket with content $($Content | Out-String)`?".trim(),
+                                     "Setting Ticket".trim() )) {
+            $Response = ( Invoke-WebRequest @InvokeParams -Uri $uri -Method Post).Content
+            if ($Raw) {
+                $Response
+            }
+            else {
+                ConvertFrom-RTResponse -Content $Response
             }
         }
-    
-    # Build up content for ticket
-    # Queue must come last.  wtf RT. https://stackoverflow.com/a/29540271
-    $Content = ''
-    foreach($Key in $InputHash.Keys)
-    {
-        if($Key -ne 'Queue')
-        {
-            $Content += "$Key`: $($InputHash[$Key])`n"
-        }
-        #Later: Handle odd custom fields
-    }
-    if($InputHash.ContainsKey('Queue'))
-    {
-        $Content += "Queue: $($InputHash['Queue'])`n"
-    }
-
-    $InvokeParams.Add('Body', @{content=$Content})
-    Write-Verbose "$($InvokeParams | Out-String)`n$($Content | Out-String)"
-    $Response = ( Invoke-WebRequest @InvokeParams -Uri $uri -Method Post).Content
-    if ($Raw) {
-        $Response
-    }
-    else {
-        ConvertFrom-RTResponse -Content $Response
     }
 }
