@@ -9,7 +9,7 @@
     #>
     param($DateString)
     $Date = $DateString -split '\s'
-    $Month = switch ($x)
+    $Month = switch ($Date[1])
              {
                  'jan' {1}
                  'feb' {2}
@@ -26,8 +26,7 @@
                  default {(Get-Date).Month}
              }
     $Day = $Date[2]
-    $Hour = ( $Date[3] -split ':')[0]
-    $Minute = ( $Date[3] -split ':')[1]
+    $Hour, $Minute, $Second = $Date[3] -split ':'
     $Year = $Date[4]
-    Get-Date -Year $Year -Month $Month -Day $Day -Hour $Hour -Minute $Minute
+    Get-Date -Year $Year -Month $Month -Day $Day -Hour $Hour -Minute $Minute -Second $Second
 }
