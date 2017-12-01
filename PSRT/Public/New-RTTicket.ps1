@@ -82,7 +82,7 @@ Function New-RTTicket {
         [string]$BaseUri = $PSRTConfig.BaseUri,
         [switch]$Raw
     )
-    $InvokeParams = @{ WebSession = $Session }
+    $InvokeParams = @{ WebSession = $Session; UseBasicParsing = $true }
     if($Referer)
     {
         $headers = @{}

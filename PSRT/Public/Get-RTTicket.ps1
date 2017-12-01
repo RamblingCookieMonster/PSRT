@@ -33,7 +33,7 @@ Function Get-RTTicket {
     )
     $Ticket = $Ticket.TrimStart('#').TrimStart('RT')
     $uri = Join-Parts -Separator '/' -Parts $BaseUri, "REST/1.0/ticket/$Ticket"
-    $Response = ( Invoke-WebRequest -Uri $uri -WebSession $Session ).Content
+    $Response = ( Invoke-WebRequest -Uri $uri -WebSession $Session -UseBasicParsing ).Content
     if($Raw)
     {
         $Response

@@ -39,13 +39,12 @@ function New-RTSession {
         [switch]$DontUpdateConfig
     )
     Write-Verbose "Creating RT Session"
-    $r = Invoke-WebRequest -Uri $BaseUri -SessionVariable RTSession -Credential $Credential
-    $form = $r.Forms[0]
-    $form.fields['user'] = $Credential.UserName
-    $form.fields['pass'] = $Credential.GetNetworkCredential().Password
-    Write-Verbose "Sending RT Session credentials for [$($Credential.UserName)]"
-    $r = Invoke-WebRequest -Uri "$BaseUri$($Form.Action)" -WebSession $RTSession -Method POST -Body $form.Fields
+    $EncodedUserName = [System.Web.HttpUtility]::UrlEncode($Credential.UserName)
+    $EncodedPassword = [System.Web.HttpUtility]::UrlEncode($Credential.GetNetworkCredential().Password)
+    Write-Verbose -Message "Sending RT Session credentials for $($Credential.UserName)"
+    $r = Invoke-WebRequest -Uri $BaseUri -SessionVariable RTSession -Method Post -UseBasicParsing -Body "user=$EncodedUserName&pass=$EncodedPassword"
     if ($r.Content -notmatch "<li>Your username or password is incorrect</li>") {
+        Write-Verbose -Message "Authentication Successful"
         if(-not $DontUpdateConfig)
         {
             Set-RTConfig -Session $RTSession
