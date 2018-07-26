@@ -31,6 +31,7 @@ Function Get-RTTicket {
         [string]$BaseUri = $PSRTConfig.BaseUri,
         [switch]$Raw
     )
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     $Ticket = $Ticket.TrimStart('#').TrimStart('RT')
     $uri = Join-Parts -Separator '/' -Parts $BaseUri, "REST/1.0/ticket/$Ticket"
     $Response = ( Invoke-WebRequest -Uri $uri -WebSession $Session -UseBasicParsing ).Content
