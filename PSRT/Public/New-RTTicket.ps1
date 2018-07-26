@@ -82,6 +82,7 @@ Function New-RTTicket {
         [string]$BaseUri = $PSRTConfig.BaseUri,
         [switch]$Raw
     )
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     $InvokeParams = @{ WebSession = $Session; UseBasicParsing = $true }
     if($Referer)
     {
