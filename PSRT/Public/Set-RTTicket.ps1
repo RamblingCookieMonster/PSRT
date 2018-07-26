@@ -77,6 +77,7 @@
         [switch]$Raw,
         [switch]$Force
     )
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     Process
     {
         $InvokeParams = @{ WebSession = $Session; UseBasicParsing = $true }
