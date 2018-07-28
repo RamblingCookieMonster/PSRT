@@ -39,7 +39,6 @@ function New-RTSession {
         [switch]$DontUpdateConfig
     )
     Add-Type -AssemblyName System.Web
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     Write-Verbose "Creating RT Session"
     $EncodedUserName = [System.Web.HttpUtility]::UrlEncode($Credential.UserName)
     $EncodedPassword = [System.Web.HttpUtility]::UrlEncode($Credential.GetNetworkCredential().Password)
