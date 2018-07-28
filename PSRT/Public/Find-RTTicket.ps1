@@ -49,7 +49,6 @@ Function Find-RTTicket {
         [switch]$Raw
     )
     Add-Type -AssemblyName System.Web
-    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
     $InvokeParams = @{ WebSession = $Session; UseBasicParsing = $true }
     if($Referer)
     {
