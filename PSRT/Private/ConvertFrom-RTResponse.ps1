@@ -4,7 +4,7 @@
     [string]$Content
     )
     $ContentArray = $Content -split "`n"
-    $Count = $ContentArray.Count    
+    $Count = $ContentArray.Count
     $Output = [ordered]@{}
     $Name = $null
     $Value = $null
@@ -48,13 +48,13 @@
             continue
         }
 
-        if($thisline -match '^[a-zA-Z0-9 .{}()]+:')
+        if($thisline -match '^[a-zA-Z0-9.{}()]+[a-zA-Z0-9 .{}()]*:')
         {
             $SplitData = $thisline.split(':')
             $SplitCount = $SplitData.count
             $Name = $SplitData[0]
             # account for other colons on first line
-            $Value = ($SplitData[1..($SplitCount-1)] -join ':').Trim() 
+            $Value = ($SplitData[1..($SplitCount-1)] -join ':').Trim()
         }
         elseif($thisline)
         {
