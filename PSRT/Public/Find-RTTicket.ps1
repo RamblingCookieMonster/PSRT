@@ -48,6 +48,7 @@ Function Find-RTTicket {
         [string]$BaseUri = $PSRTConfig.BaseUri,
         [switch]$Raw
     )
+    Add-Type -AssemblyName System.Web
     $InvokeParams = @{ WebSession = $Session; UseBasicParsing = $true }
     if($Referer)
     {
